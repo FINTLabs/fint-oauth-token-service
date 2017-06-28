@@ -50,7 +50,7 @@ public void myMethod() {
 
 | Key | Description |
 |-----|-------------|
-| fint.oauth.enabled | true / false. Enables / disables the TokenService |
+| fint.oauth.enabled | true / false. Enables / disables the TokenService. Disabled by default. |
 | fint.oauth.username | Username |
 | fint.oauth.password | Password |
 | fint.oauth.access-token-uri | Access token URI |
