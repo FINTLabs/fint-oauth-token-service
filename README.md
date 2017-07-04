@@ -16,7 +16,7 @@ repositories {
     }
 }
 
-compile('no.fint:fint-oauth-token-service:0.0.2')
+compile('no.fint:fint-oauth-token-service:0.0.3')
 ```
 
 ## Usage
