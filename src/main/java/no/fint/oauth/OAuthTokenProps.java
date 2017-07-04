@@ -10,24 +10,24 @@ public class OAuthTokenProps {
 
     static final String ENABLE_OAUTH = "fint.oauth.enabled";
 
-    @Value("${fint.oauth.username}")
+    @Value("${fint.oauth.username:}")
     private String username;
 
-    @Value("${fint.oauth.password}")
+    @Value("${fint.oauth.password:}")
     private String password;
 
-    @Value("${fint.oauth.access-token-uri}")
+    @Value("${fint.oauth.access-token-uri:}")
     private String accessTokenUri;
 
-    @Value("${fint.oauth.client-id}")
+    @Value("${fint.oauth.client-id:}")
     private String clientId;
 
-    @Value("${fint.oauth.client-secret}")
+    @Value("${fint.oauth.client-secret:}")
     private String clientSecret;
 
-    @Value("${fint.oauth.request-url}")
+    @Value("${fint.oauth.request-url:}")
     private String requestUrl;
 
-    @Value("${fint.oauth.scope}")
+    @Value("${fint.oauth.scope:}")
     private String scope;
 }
