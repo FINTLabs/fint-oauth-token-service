@@ -30,4 +30,7 @@ public class OAuthTokenProps {
 
     @Value("${fint.oauth.scope:}")
     private String scope;
+
+    @Value("${fint.oauth.grant-type:password}")
+    private String grantType;
 }

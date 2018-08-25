@@ -16,12 +16,20 @@ class TokenServiceSpec extends Specification {
         tokenService = new TokenService(props: props, restTemplate: restTemplate)
     }
 
+    def "Do not initialize AccessToken when no request url is set"() {
+        when:
+        tokenService.init()
+
+        then:
+        0 * restTemplate.getForEntity(_ as String, _ as Class)
+    }
+
     def "Throw IllegalStateException if request url does not return OK status"() {
         when:
         tokenService.init()
 
         then:
-        2 * props.getRequestUrl() >> 'invalid-url'
+        3 * props.getRequestUrl() >> 'invalid-url'
         1 * restTemplate.getForEntity(_ as String, _ as Class) >> ResponseEntity.notFound().build()
         thrown(IllegalStateException)
     }

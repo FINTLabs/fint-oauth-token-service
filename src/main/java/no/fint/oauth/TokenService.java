@@ -1,13 +1,16 @@
 package no.fint.oauth;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 
+@Slf4j
 public class TokenService {
 
     @Autowired
@@ -18,7 +21,11 @@ public class TokenService {
 
     @PostConstruct
     public void init() {
-        refreshToken();
+        if (StringUtils.isEmpty(props.getRequestUrl())) {
+            log.info("No request-url configured, will not initialize access token");
+        } else {
+            refreshToken();
+        }
     }
 
     private void refreshToken() {
@@ -37,5 +44,4 @@ public class TokenService {
             return restTemplate.getAccessToken().getValue();
         }
     }
-
 }

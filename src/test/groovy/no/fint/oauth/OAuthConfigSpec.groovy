@@ -17,13 +17,12 @@ class OAuthConfigSpec extends Specification {
         props != null
     }
 
-    def "Create OAuth RestTemplate with grant type password"() {
+    def "Create OAuth RestTemplate"() {
         when:
         def restTemplate = config.oauth2RestTemplate()
 
         then:
         restTemplate != null
-        restTemplate.resource.grantType == 'password'
     }
 
     def "Create TokenService"() {

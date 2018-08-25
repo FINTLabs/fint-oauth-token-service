@@ -28,9 +28,14 @@ public class OAuthConfig {
         resourceDetails.setAccessTokenUri(props.getAccessTokenUri());
         resourceDetails.setClientId(props.getClientId());
         resourceDetails.setClientSecret(props.getClientSecret());
-        resourceDetails.setGrantType("password");
+        resourceDetails.setGrantType(props.getGrantType());
         resourceDetails.setScope(Collections.singletonList(props.getScope()));
         return new OAuth2RestTemplate(resourceDetails);
+    }
+
+    @Bean
+    public OAuthRestTemplateFactory oAuthRestTemplateFactory() {
+        return new OAuthRestTemplateFactory();
     }
 
     @Bean
