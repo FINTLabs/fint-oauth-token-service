@@ -63,6 +63,7 @@ public void myMethod() {
 | fint.oauth.scope | Scope |
 | fint.oauth.grant-type | Grant type (default value: password) |
 
+---
 
 ### RestTemplate Factory
 
