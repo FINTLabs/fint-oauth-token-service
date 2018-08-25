@@ -61,7 +61,7 @@ public void myMethod() {
 | fint.oauth.client-secret | Client secret |
 | fint.oauth.request-url | Request url |
 | fint.oauth.scope | Scope |
-| fint.oauth.grant-type | Grant type (default value: password) |
+| fint.oauth.grant-type | Grant type, optional (default value: password) |
 
 ---
 
