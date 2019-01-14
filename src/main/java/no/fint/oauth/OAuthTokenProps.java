@@ -19,7 +19,7 @@ import java.io.IOException;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OAuthTokenProps {
 
-    static final String ENABLE_OAUTH = "fint.oauth.enabled";
+    public static final String ENABLE_OAUTH = "fint.oauth.enabled";
 
     @Value("${fint.oauth.username:}")
     @JsonProperty
