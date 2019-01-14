@@ -24,24 +24,28 @@ public class TokenService {
         if (StringUtils.isEmpty(props.getRequestUrl())) {
             log.info("No request-url configured, will not initialize access token");
         } else {
-            refreshToken();
+            refreshToken(props.getRequestUrl());
         }
     }
 
-    private void refreshToken() {
-        ResponseEntity<Void> response = restTemplate.getForEntity(props.getRequestUrl(), Void.class);
+    private void refreshToken(String requestUrl) {
+        ResponseEntity<Void> response = restTemplate.getForEntity(requestUrl, Void.class);
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new IllegalStateException(String.format("Unable to get access token from %s. Status: %d", props.getRequestUrl(), response.getStatusCodeValue()));
         }
     }
 
-    public String getAccessToken() {
+    public String getAccessToken(String requestUrl) {
         OAuth2AccessToken accessToken = restTemplate.getAccessToken();
         if (accessToken.getExpiresIn() > 5) {
             return accessToken.getValue();
         } else {
-            refreshToken();
+            refreshToken(requestUrl);
             return restTemplate.getAccessToken().getValue();
         }
+    }
+
+    public String getAccessToken() {
+        return getAccessToken(props.getRequestUrl());
     }
 }
