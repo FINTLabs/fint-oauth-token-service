@@ -59,4 +59,16 @@ class TokenServiceSpec extends Specification {
         1 * restTemplate.getForEntity(_ as String, _ as Class) >> ResponseEntity.ok().build()
         accessToken == 'test'
     }
+
+    def "Get Bearer token"() {
+        when:
+        def bearerToken = tokenService.getBearerToken()
+
+        then:
+        1 * restTemplate.getAccessToken() >> Mock(OAuth2AccessToken) {
+            getExpiresIn() >> 10
+            getValue() >> 'test'
+        }
+        bearerToken == 'Bearer test'
+    }
 }

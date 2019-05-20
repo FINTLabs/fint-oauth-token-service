@@ -48,4 +48,8 @@ public class TokenService {
     public String getAccessToken() {
         return getAccessToken(props.getRequestUrl());
     }
+
+    public String getBearerToken() {
+        return String.format("Bearer %s", getAccessToken(props.getRequestUrl()));
+    }
 }
