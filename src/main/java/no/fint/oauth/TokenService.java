@@ -55,6 +55,10 @@ public class TokenService {
     }
 
     public String getBearerToken(String requestUrl) {
-        return String.format(BEARER_TOKEN_TEMPLATE, getAccessToken(requestUrl));
+        String accessToken = getAccessToken(requestUrl);
+        if (accessToken != null) {
+            return String.format(BEARER_TOKEN_TEMPLATE, accessToken);
+        }
+        return null;
     }
 }
