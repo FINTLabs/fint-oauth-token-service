@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 @Slf4j
 public class TokenService {
 
+    public static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";
     @Autowired
     private OAuth2RestTemplate restTemplate;
 
@@ -50,6 +51,10 @@ public class TokenService {
     }
 
     public String getBearerToken() {
-        return String.format("Bearer %s", getAccessToken(props.getRequestUrl()));
+        return getBearerToken(props.getRequestUrl());
+    }
+
+    public String getBearerToken(String requestUrl) {
+        return String.format(BEARER_TOKEN_TEMPLATE, getAccessToken(requestUrl));
     }
 }
