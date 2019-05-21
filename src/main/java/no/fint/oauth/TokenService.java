@@ -6,14 +6,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 
 @Slf4j
+@Service
 public class TokenService {
 
-    public static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";
+    private static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";
+
     @Autowired
     private OAuth2RestTemplate restTemplate;
 
