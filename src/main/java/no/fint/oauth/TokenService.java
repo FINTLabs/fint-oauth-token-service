@@ -12,7 +12,6 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 
 @Slf4j
-@Service
 public class TokenService {
 
     private static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";

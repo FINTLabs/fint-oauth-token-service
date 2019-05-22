@@ -38,9 +38,9 @@ public class OAuthConfig {
         return new OAuthRestTemplateFactory();
     }
 
-    //@Bean
-    //public TokenService tokenService() {
-        //return new TokenService();
-    //}
+    @Bean
+    public TokenService tokenService() {
+        return new TokenService();
+    }
 
 }
