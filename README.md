@@ -1,4 +1,4 @@
-# FINT OAuth Token Service
+# FINT OAuth Token Service 
 
 [![Build Status](https://travis-ci.org/FINTLabs/fint-oauth-token-service.svg?branch=master)](https://travis-ci.org/FINTLabs/fint-oauth-token-service)
 [![Coverage Status](https://coveralls.io/repos/github/FINTLabs/fint-oauth-token-service/badge.svg?branch=master)](https://coveralls.io/github/FINTLabs/fint-oauth-token-service?branch=master)
