@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/FINTLabs/fint-oauth-token-service.svg?branch=master)](https://travis-ci.org/FINTLabs/fint-oauth-token-service)
 [![Coverage Status](https://coveralls.io/repos/github/FINTLabs/fint-oauth-token-service/badge.svg?branch=master)](https://coveralls.io/github/FINTLabs/fint-oauth-token-service?branch=master)
+[ ![Download](https://api.bintray.com/packages/fint/maven/fint-oauth-token-service/images/download.svg) ](https://bintray.com/fint/maven/fint-oauth-token-service/_latestVersion)
 
 Based on the [Spring Security OAuth](http://projects.spring.io/spring-security-oauth/) project.  
 Handles the access and refresh token.
@@ -16,7 +17,7 @@ repositories {
     }
 }
 
-compile('no.fint:fint-oauth-token-service:1.2.0')
+compile('no.fint:fint-oauth-token-service:+')
 ```
 
 ## Usage
