@@ -1,6 +1,7 @@
 package no.fint.oauth;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,7 @@ public class OAuthConfig {
     }
 
     @Bean
+    @Qualifier("fintOauthRestTemplate")
     public OAuth2RestTemplate oauth2RestTemplate() {
         OAuthTokenProps props = props();
         ResourceOwnerPasswordResourceDetails resourceDetails = new ResourceOwnerPasswordResourceDetails();

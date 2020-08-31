@@ -2,6 +2,7 @@ package no.fint.oauth;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
@@ -16,6 +17,7 @@ public class TokenService {
     private static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";
 
     @Autowired
+    @Qualifier("fintOauthRestTemplate")
     private OAuth2RestTemplate restTemplate;
 
     @Autowired
