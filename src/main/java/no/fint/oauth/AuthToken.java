@@ -1,16 +1,12 @@
 package no.fint.oauth;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Data
-@AllArgsConstructor
-public class AuthToken {
-
-    private final String accessToken;
-    private final String tokenType;
-    private final int expiresIn;
-    private final String acr;
-    private final String scope;
-
+public record AuthToken(
+        @JsonProperty("access_token") String accessToken,
+        @JsonProperty("token_type") String tokenType,
+        @JsonProperty("expires_in") int expiresIn,
+        @JsonProperty("acr") String acr,
+        @JsonProperty("scope") String scope
+) {
 }
