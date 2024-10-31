@@ -2,14 +2,18 @@ package no.fint.oauth;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 
 @Slf4j
+@Service
+@ConditionalOnProperty(name = "fint.oauth.enabled", havingValue = "true")
 public class TokenService {
 
     private static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";
@@ -62,11 +66,11 @@ public class TokenService {
         if (authToken == null || tokenHasExpired(5)) {
             refreshToken(requestUrl);
         }
-        return authToken.getAccessToken();
+        return authToken.accessToken();
     }
 
     private boolean tokenHasExpired(int expiredTime) {
-        return authToken.getExpiresIn() < expiredTime;
+        return authToken.expiresIn() < expiredTime;
     }
 
     public String getAccessToken() {
