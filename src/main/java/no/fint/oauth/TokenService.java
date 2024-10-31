@@ -1,27 +1,27 @@
 package no.fint.oauth;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-
-import javax.annotation.PostConstruct;
+import org.springframework.web.client.RestClient;
 
 @Slf4j
 public class TokenService {
 
     private static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";
+    private final RestClient restClient = RestClient.builder().build();
+    private final OAuthTokenProps props;
+    private final MultiValueMap<String, String> formData;
+    private AuthToken authToken;
 
-    @Autowired
-    @Qualifier("fintOauthRestTemplate")
-    private OAuth2RestTemplate restTemplate;
-
-    @Autowired
-    private OAuthTokenProps props;
+    public TokenService(OAuthTokenProps props) {
+        this.props = props;
+        this.formData = createFormData();
+    }
 
     @PostConstruct
     public void init() {
@@ -33,20 +33,40 @@ public class TokenService {
     }
 
     private void refreshToken(String requestUrl) {
-        ResponseEntity<Void> response = restTemplate.getForEntity(requestUrl, Void.class);
+        ResponseEntity<AuthToken> response = restClient.post()
+                .uri(requestUrl)
+                .body(formData)
+                .retrieve()
+                .toEntity(AuthToken.class);
         if (response.getStatusCode() != HttpStatus.OK) {
-            throw new IllegalStateException(String.format("Unable to get access token from %s. Status: %d", props.getRequestUrl(), response.getStatusCodeValue()));
+            throw new IllegalStateException(String.format("Unable to get access token from %s. Status: %d", props.getRequestUrl(), response.getStatusCode().value()));
+        } else {
+            authToken = response.getBody();
         }
     }
 
+    private MultiValueMap<String, String> createFormData() {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+
+        formData.add("grant_type", "password");
+        formData.add("client_id", props.getClientId());
+        formData.add("client_secret", props.getClientSecret());
+        formData.add("username", props.getUsername());
+        formData.add("password", props.getPassword());
+        formData.add("scope", props.getScope());
+
+        return formData;
+    }
+
     public String getAccessToken(String requestUrl) {
-        OAuth2AccessToken accessToken = restTemplate.getAccessToken();
-        if (accessToken.getExpiresIn() > 5) {
-            return accessToken.getValue();
-        } else {
+        if (authToken == null || tokenHasExpired(5)) {
             refreshToken(requestUrl);
-            return restTemplate.getAccessToken().getValue();
         }
+        return authToken.getAccessToken();
+    }
+
+    private boolean tokenHasExpired(int expiredTime) {
+        return authToken.getExpiresIn() < expiredTime;
     }
 
     public String getAccessToken() {
