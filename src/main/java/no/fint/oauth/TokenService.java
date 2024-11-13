@@ -17,14 +17,19 @@ import org.springframework.web.client.RestClient;
 public class TokenService {
 
     private static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";
-    private final RestClient restClient = RestClient.builder().build();
+    private final RestClient restClient;
     private final OAuthTokenProps props;
     private final MultiValueMap<String, String> formData;
     private AuthToken authToken;
 
-    public TokenService(OAuthTokenProps props) {
+    public TokenService(OAuthTokenProps props, RestClient restClient) {
         this.props = props;
+        this.restClient = restClient;
         this.formData = createFormData();
+    }
+
+    public TokenService(OAuthTokenProps props) {
+        this(props, RestClient.builder().build());
     }
 
     @PostConstruct
