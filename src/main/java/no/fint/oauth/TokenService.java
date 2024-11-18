@@ -2,7 +2,6 @@ package no.fint.oauth;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,6 @@ import org.springframework.web.client.RestClient;
 
 @Slf4j
 @Service
-@ConditionalOnProperty(name = "fint.oauth.enabled", havingValue = "true")
 public class TokenService {
 
     private static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";
