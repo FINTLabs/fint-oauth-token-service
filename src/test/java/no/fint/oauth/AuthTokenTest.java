@@ -19,7 +19,7 @@ public class AuthTokenTest {
         assertNotNull(authToken);
         assertEquals(accessToken, authToken.accessToken());
         assertEquals(tokenType, authToken.tokenType());
-        assertTrue(expiresIn != authToken.expiredUnixTimestampInSeconds());
+        assertTrue(expiresIn != authToken.expirationTimestampMillis());
         assertEquals(acr, authToken.acr());
         assertEquals(scope, authToken.scope());
     }
