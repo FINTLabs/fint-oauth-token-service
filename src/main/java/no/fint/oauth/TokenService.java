@@ -25,9 +25,9 @@ public class TokenService {
     private final MultiValueMap<String, String> formData;
     private AuthToken authToken;
 
-    public TokenService(OAuthTokenProps props) {
+    public TokenService(OAuthTokenProps props, RestClient restClient) {
         this.props = props;
-        this.restClient = RestClient.builder().build();
+        this.restClient = restClient;
         this.formData = createFormData();
     }
 
@@ -74,6 +74,7 @@ public class TokenService {
     }
 
     private boolean tokenHasExpired() {
+        log.info("WHAT THE FFUUUUUUUUCK");
         Duration duration = Duration.between(Instant.now(), Instant.ofEpochMilli(authToken.expiredUnixTimestampInSeconds()));
         return duration.isNegative() || duration.getSeconds() < 30;
     }
