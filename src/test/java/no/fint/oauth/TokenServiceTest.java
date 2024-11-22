@@ -83,12 +83,31 @@ public class TokenServiceTest {
     }
 
     @Test
+    void refreshToken_WhenTokenHasExpired() {
+        String validUrl = "http://valid-url";
+        AuthToken expiredToken = new AuthToken("expired-token", "bearer", 25L, "acr", "scope");
+        AuthToken newAuthToken = new AuthToken("new-test-token", "bearer", 3600L, "acr", "scope");
+
+        when(props.getRequestUrl()).thenReturn(validUrl);
+        mockRestClient(validUrl)
+                .thenReturn(ResponseEntity.ok(expiredToken))
+                .thenReturn(ResponseEntity.ok(newAuthToken));
+
+        String firstAccessToken = tokenService.getAccessToken();
+        String refreshedAccessToken = tokenService.getAccessToken();
+
+        assertEquals("expired-token", firstAccessToken);
+        assertEquals("new-test-token", refreshedAccessToken);
+    }
+
+
+    @Test
     void getAccessTokenValueIfExpirationIsMoreThanFiveSeconds() {
         // Given
         String validUrl = "http://valid-url";
         when(props.getRequestUrl()).thenReturn(validUrl);
 
-        AuthToken authToken = new AuthToken("test-token", "bearer", Instant.now().plusSeconds(3600).getEpochSecond(), "acr", "scope");
+        AuthToken authToken = new AuthToken("test-token", "bearer", 3600L, "acr", "scope");
         mockRestClient(validUrl).thenReturn(ResponseEntity.ok(authToken));
 
         // When
@@ -154,8 +173,6 @@ public class TokenServiceTest {
         // Then
         assertEquals("test-token", accessToken);
     }
-
-
 
 
     // Todo sjekk casing og rett mapping av form-data
