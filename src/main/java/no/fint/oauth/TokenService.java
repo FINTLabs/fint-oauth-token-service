@@ -2,6 +2,7 @@ package no.fint.oauth;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -10,8 +11,12 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 
+import java.time.Duration;
+import java.time.Instant;
+
 @Slf4j
 @Service
+@ConditionalOnProperty(value = "no.fint.oauth.enabled", matchIfMissing = true)
 public class TokenService {
 
     private static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";
@@ -20,14 +25,10 @@ public class TokenService {
     private final MultiValueMap<String, String> formData;
     private AuthToken authToken;
 
-    public TokenService(OAuthTokenProps props, RestClient restClient) {
-        this.props = props;
-        this.restClient = restClient;
-        this.formData = createFormData();
-    }
-
     public TokenService(OAuthTokenProps props) {
-        this(props, RestClient.builder().build());
+        this.props = props;
+        this.restClient = RestClient.builder().build();
+        this.formData = createFormData();
     }
 
     @PostConstruct
@@ -66,14 +67,15 @@ public class TokenService {
     }
 
     public String getAccessToken(String requestUrl) {
-        if (authToken == null || tokenHasExpired(5)) {
+        if (authToken == null || tokenHasExpired()) {
             refreshToken(requestUrl);
         }
         return authToken.accessToken();
     }
 
-    private boolean tokenHasExpired(int expiredTime) {
-        return authToken.expiresIn() < expiredTime;
+    private boolean tokenHasExpired() {
+        Duration duration = Duration.between(Instant.now(), Instant.ofEpochMilli(authToken.expiresIn()));
+        return duration.isNegative() || duration.getSeconds() < 30;
     }
 
     public String getAccessToken() {
@@ -91,4 +93,5 @@ public class TokenService {
         }
         return null;
     }
+
 }
