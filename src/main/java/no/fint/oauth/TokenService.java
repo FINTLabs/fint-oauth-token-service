@@ -2,6 +2,7 @@ package no.fint.oauth;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class TokenService {
     private final MultiValueMap<String, String> formData;
     private AuthToken authToken;
 
-    public TokenService(OAuthTokenProps props, RestClient restClient) {
+    public TokenService(OAuthTokenProps props, @Qualifier("oauthRestClient") RestClient restClient) {
         this.props = props;
         this.restClient = restClient;
         this.formData = createFormData();
