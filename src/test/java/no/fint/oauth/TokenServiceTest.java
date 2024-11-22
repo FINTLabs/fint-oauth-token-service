@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
+import java.time.Instant;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,7 +47,7 @@ public class TokenServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        tokenService = new TokenService(props);
+        tokenService = new TokenService(props, restClient);
     }
 
     private OngoingStubbing<ResponseEntity<AuthToken>> mockRestClient(String url) {
@@ -86,7 +88,7 @@ public class TokenServiceTest {
         String validUrl = "http://valid-url";
         when(props.getRequestUrl()).thenReturn(validUrl);
 
-        AuthToken authToken = new AuthToken("test-token", "bearer", 10, "acr", "scope");
+        AuthToken authToken = new AuthToken("test-token", "bearer", Instant.now().plusSeconds(3600).getEpochSecond(), "acr", "scope");
         mockRestClient(validUrl).thenReturn(ResponseEntity.ok(authToken));
 
         // When
@@ -141,7 +143,7 @@ public class TokenServiceTest {
         // Given
         String validUrl = "http://valid-url";
         when(props.getRequestUrl()).thenReturn(validUrl);
-        AuthToken authToken = new AuthToken("test-token", "bearer", 10, "acr", "scope");
+        AuthToken authToken = new AuthToken("test-token", "bearer", 5, "acr", "scope");
 
         mockRestClient(validUrl).thenReturn(ResponseEntity.ok(authToken));
 
@@ -152,6 +154,9 @@ public class TokenServiceTest {
         // Then
         assertEquals("test-token", accessToken);
     }
+
+
+
 
     // Todo sjekk casing og rett mapping av form-data
 }
