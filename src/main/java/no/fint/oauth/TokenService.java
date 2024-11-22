@@ -74,7 +74,6 @@ public class TokenService {
     }
 
     private boolean tokenHasExpired() {
-        log.info("WHAT THE FFUUUUUUUUCK");
         Duration duration = Duration.between(Instant.now(), Instant.ofEpochMilli(authToken.expiredUnixTimestampInSeconds()));
         return duration.isNegative() || duration.getSeconds() < 30;
     }
