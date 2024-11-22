@@ -45,7 +45,7 @@ public class TokenServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        tokenService = new TokenService(props, restClient);
+        tokenService = new TokenService(props);
     }
 
     private OngoingStubbing<ResponseEntity<AuthToken>> mockRestClient(String url) {
