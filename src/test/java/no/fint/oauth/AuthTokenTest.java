@@ -1,6 +1,10 @@
 package no.fint.oauth;
 
 import org.junit.jupiter.api.Test;
+
+import java.time.DateTimeException;
+import java.time.Instant;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AuthTokenTest {
@@ -9,7 +13,7 @@ public class AuthTokenTest {
     public void testAuthTokenCreation() {
         String accessToken = "sampleAccessToken";
         String tokenType = "Bearer";
-        int expiresIn = 3600;
+        long expiresIn = 3600;
         String acr = "Level4";
         String scope = "read write";
 
@@ -18,8 +22,18 @@ public class AuthTokenTest {
         assertNotNull(authToken);
         assertEquals(accessToken, authToken.accessToken());
         assertEquals(tokenType, authToken.tokenType());
-        assertEquals(expiresIn, authToken.expiresIn());
+        assertTrue(isUnixTimeStampInSeconds(authToken.expiresIn()));
         assertEquals(acr, authToken.acr());
         assertEquals(scope, authToken.scope());
     }
+
+    private boolean isUnixTimeStampInSeconds(long l) {
+        try {
+            Instant.ofEpochSecond(l);
+            return true;
+        } catch (DateTimeException e) {
+            return false;
+        }
+    }
+
 }
