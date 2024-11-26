@@ -17,7 +17,7 @@ import java.time.Instant;
 
 @Slf4j
 @Service
-@ConditionalOnProperty(value = "no.fint.oauth.enabled", havingValue = "true")
+@ConditionalOnProperty(value = "fint.oauth.enabled", havingValue = "true")
 public class TokenService {
 
     private static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";
