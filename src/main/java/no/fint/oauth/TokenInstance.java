@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -47,12 +48,16 @@ public class TokenInstance {
     }
 
     public void refreshToken() {
-        authToken = oauthRestClient.post()
+        ResponseEntity<AuthToken> response = oauthRestClient.post()
                 .uri(props.getAccessTokenUri())
                 .body(formData)
                 .retrieve()
-                .toEntity(AuthToken.class)
-                .getBody();
+                .toEntity(AuthToken.class);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            authToken = response.getBody();
+        } else {
+            throw new IllegalStateException("Unable to refresh token");
+        }
     }
 
     private MultiValueMap<String, String> createFormData() {
