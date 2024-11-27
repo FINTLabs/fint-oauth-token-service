@@ -1,82 +1,55 @@
 package no.fint.oauth;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestClient;
-
-import java.time.Duration;
-import java.time.Instant;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 @ConditionalOnProperty(value = "fint.oauth.enabled", havingValue = "true")
 public class TokenService {
 
     private static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";
-    private final RestClient restClient;
+    private final RestClient oauthRestClient;
     private final OAuthTokenProps props;
-    private final MultiValueMap<String, String> formData;
-    private AuthToken authToken;
-
-    public TokenService(OAuthTokenProps props, @Qualifier("oauthRestClient") RestClient restClient) {
-        this.props = props;
-        this.restClient = restClient;
-        this.formData = createFormData();
-    }
+    private final TokenInstance tokenInstance;
 
     @PostConstruct
     public void init() {
-        if (StringUtils.isEmpty(props.getRequestUrl())) {
+        if (ObjectUtils.isEmpty(props.getRequestUrl())) {
             log.info("No request-url configured, will not initialize access token");
         } else {
-            refreshToken(props.getRequestUrl());
+            refreshConnection(props.getRequestUrl());
         }
     }
 
-    private void refreshToken(String requestUrl) {
-        ResponseEntity<AuthToken> response = restClient.post()
+    private void refreshConnection(String requestUrl) {
+        ResponseEntity<Void> response = oauthRestClient.post()
                 .uri(requestUrl)
-                .body(formData)
+                .headers(header -> header.add(
+                        HttpHeaders.AUTHORIZATION, BEARER_TOKEN_TEMPLATE.formatted(tokenInstance.getAccessToken())
+                ))
                 .retrieve()
-                .toEntity(AuthToken.class);
+                .toBodilessEntity();
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new IllegalStateException(String.format("Unable to get access token from %s. Status: %d", props.getRequestUrl(), response.getStatusCode().value()));
-        } else {
-            authToken = response.getBody();
         }
-    }
-
-    private MultiValueMap<String, String> createFormData() {
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-
-        formData.add("grant_type", "password");
-        formData.add("client_id", props.getClientId());
-        formData.add("client_secret", props.getClientSecret());
-        formData.add("username", props.getUsername());
-        formData.add("password", props.getPassword());
-        formData.add("scope", props.getScope());
-
-        return formData;
     }
 
     public String getAccessToken(String requestUrl) {
-        if (authToken == null || tokenHasExpired()) {
-            refreshToken(requestUrl);
+        if (tokenInstance.isNull() || tokenInstance.hasExpired()) {
+            tokenInstance.refreshToken();
+            refreshConnection(requestUrl);
         }
-        return authToken.accessToken();
-    }
-
-    private boolean tokenHasExpired() {
-        Duration duration = Duration.between(Instant.now(), Instant.ofEpochMilli(authToken.expirationTimestampMillis()));
-        return duration.isNegative() || duration.getSeconds() < 30;
+        return tokenInstance.getAccessToken();
     }
 
     public String getAccessToken() {
