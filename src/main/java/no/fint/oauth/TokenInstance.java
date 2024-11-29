@@ -16,14 +16,19 @@ import java.time.Instant;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 @ConditionalOnProperty(value = "fint.oauth.enabled", havingValue = "true")
 public class TokenInstance {
 
-    private final MultiValueMap<String, String> formData = createFormData();
     private final RestClient oauthRestClient;
     private final OAuthTokenProps props;
+    private final MultiValueMap<String, String> formData;
     private AuthToken authToken;
+
+    public TokenInstance(OAuthTokenProps props, RestClient oauthRestClient) {
+        this.props = props;
+        this.oauthRestClient = oauthRestClient;
+        this.formData = createFormData();
+    }
 
     @PostConstruct
     public void init() {

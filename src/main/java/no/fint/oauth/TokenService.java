@@ -32,7 +32,7 @@ public class TokenService {
     }
 
     private void refreshConnection(String requestUrl) {
-        ResponseEntity<Void> response = oauthRestClient.post()
+        ResponseEntity<Void> response = oauthRestClient.get()
                 .uri(requestUrl)
                 .headers(header -> header.add(
                         HttpHeaders.AUTHORIZATION, BEARER_TOKEN_TEMPLATE.formatted(tokenInstance.getAccessToken())
