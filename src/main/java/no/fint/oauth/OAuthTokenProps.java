@@ -4,22 +4,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 
 @Getter
-@Component
+@Setter
 @ToString
+@Configuration
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OAuthTokenProps {
-
-    public static final String ENABLE_OAUTH = "fint.oauth.enabled";
 
     @Value("${fint.oauth.username:}")
     @JsonProperty

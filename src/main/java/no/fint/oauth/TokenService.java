@@ -1,52 +1,55 @@
 package no.fint.oauth;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.util.StringUtils;
-
-import javax.annotation.PostConstruct;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.RestClient;
 
 @Slf4j
+@Service
+@RequiredArgsConstructor
+@ConditionalOnProperty(value = "fint.oauth.enabled", havingValue = "true")
 public class TokenService {
 
     private static final String BEARER_TOKEN_TEMPLATE = "Bearer %s";
-
-    @Autowired
-    @Qualifier("fintOauthRestTemplate")
-    private OAuth2RestTemplate restTemplate;
-
-    @Autowired
-    private OAuthTokenProps props;
+    private final RestClient oauthRestClient;
+    private final OAuthTokenProps props;
+    private final TokenInstance tokenInstance;
 
     @PostConstruct
     public void init() {
-        if (StringUtils.isEmpty(props.getRequestUrl())) {
+        if (ObjectUtils.isEmpty(props.getRequestUrl())) {
             log.info("No request-url configured, will not initialize access token");
         } else {
-            refreshToken(props.getRequestUrl());
+            refreshConnection(props.getRequestUrl());
         }
     }
 
-    private void refreshToken(String requestUrl) {
-        ResponseEntity<Void> response = restTemplate.getForEntity(requestUrl, Void.class);
+    private void refreshConnection(String requestUrl) {
+        ResponseEntity<Void> response = oauthRestClient.get()
+                .uri(requestUrl)
+                .headers(header -> header.add(
+                        HttpHeaders.AUTHORIZATION, BEARER_TOKEN_TEMPLATE.formatted(tokenInstance.getAccessToken())
+                ))
+                .retrieve()
+                .toBodilessEntity();
         if (response.getStatusCode() != HttpStatus.OK) {
-            throw new IllegalStateException(String.format("Unable to get access token from %s. Status: %d", props.getRequestUrl(), response.getStatusCodeValue()));
+            throw new IllegalStateException(String.format("Unable to get access token from %s. Status: %d", props.getRequestUrl(), response.getStatusCode().value()));
         }
     }
 
     public String getAccessToken(String requestUrl) {
-        OAuth2AccessToken accessToken = restTemplate.getAccessToken();
-        if (accessToken.getExpiresIn() > 5) {
-            return accessToken.getValue();
-        } else {
-            refreshToken(requestUrl);
-            return restTemplate.getAccessToken().getValue();
+        if (tokenInstance.isNull() || tokenInstance.hasExpired()) {
+            tokenInstance.refreshToken();
+            refreshConnection(requestUrl);
         }
+        return tokenInstance.getAccessToken();
     }
 
     public String getAccessToken() {
@@ -64,4 +67,5 @@ public class TokenService {
         }
         return null;
     }
+
 }
