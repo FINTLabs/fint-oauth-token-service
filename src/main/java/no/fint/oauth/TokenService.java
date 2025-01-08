@@ -24,10 +24,10 @@ public class TokenService {
     private final TokenClient tokenClient;
 
     @Autowired
-    public TokenService(@Qualifier("oauthRestClient") RestClient restClient, OAuthTokenProps props) {
+    public TokenService(TokenClient tokenClient, TokenInstance tokenInstance, OAuthTokenProps props) {
+        this.tokenClient = tokenClient;
+        this.tokenInstance = tokenInstance;
         this.props = props;
-        this.tokenClient = new TokenClient(restClient, props);
-        this.tokenInstance = new TokenInstance(tokenClient, props);
     }
 
     public TokenService(@Qualifier("oauthWebClient") WebClient webClient, OAuthTokenProps props) {
