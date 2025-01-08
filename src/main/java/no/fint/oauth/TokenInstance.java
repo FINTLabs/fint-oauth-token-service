@@ -3,32 +3,19 @@ package no.fint.oauth;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
 import java.time.Instant;
 
 @Slf4j
-@Component
-@ConditionalOnProperty(value = "fint.oauth.enabled", havingValue = "true")
+@RequiredArgsConstructor
 public class TokenInstance {
 
-    private final RestClient oauthRestClient;
+    private final TokenClient tokenClient;
     private final OAuthTokenProps props;
-    private final MultiValueMap<String, String> formData;
     private AuthToken authToken;
-
-    public TokenInstance(OAuthTokenProps props, RestClient oauthRestClient) {
-        this.props = props;
-        this.oauthRestClient = oauthRestClient;
-        this.formData = createFormData();
-    }
 
     @PostConstruct
     public void init() {
@@ -53,29 +40,12 @@ public class TokenInstance {
     }
 
     public void refreshToken() {
-        ResponseEntity<AuthToken> response = oauthRestClient.post()
-                .uri(props.getAccessTokenUri())
-                .body(formData)
-                .retrieve()
-                .toEntity(AuthToken.class);
+        ResponseEntity<AuthToken> response = tokenClient.getAuthToken();
         if (response.getStatusCode().is2xxSuccessful()) {
             authToken = response.getBody();
         } else {
             throw new IllegalStateException("Unable to refresh token");
         }
-    }
-
-    private MultiValueMap<String, String> createFormData() {
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-
-        formData.add("grant_type", "password");
-        formData.add("client_id", props.getClientId());
-        formData.add("client_secret", props.getClientSecret());
-        formData.add("username", props.getUsername());
-        formData.add("password", props.getPassword());
-        formData.add("scope", props.getScope());
-
-        return formData;
     }
 
 }
