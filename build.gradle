@@ -39,7 +39,7 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.5'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux:3.3.5'
 
     implementation 'org.yaml:snakeyaml'
     compileOnly 'org.projectlombok:lombok'
