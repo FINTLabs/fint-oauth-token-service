@@ -28,7 +28,7 @@ public class TokenServiceTest {
     private OAuthTokenProps props;
 
     @Mock
-    private RestClient restClient;
+    private TokenClient tokenClient;
 
     @Mock
     private TokenInstance tokenInstance;
@@ -39,7 +39,7 @@ public class TokenServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        tokenService = new TokenService(restClient, props, tokenInstance);
+        tokenService = new TokenService(tokenClient, tokenInstance, props);
     }
 
     @Test
