@@ -1,6 +1,8 @@
 package no.fint.oauth;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +31,8 @@ public class TokenClient {
         this.formData = createFormData();
     }
 
-    public TokenClient(RestClient restClient, OAuthTokenProps props) {
+    @Autowired
+    public TokenClient(@Qualifier("oauthRestClient") RestClient restClient, OAuthTokenProps props) {
         this.restClient = restClient;
         this.webClient = null;
         this.props = props;
